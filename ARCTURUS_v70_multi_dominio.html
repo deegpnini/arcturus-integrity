@@ -3,7 +3,514 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARCTURUS v8.0 -- Scientific Integrity Screening</title>
-<!-- COLE TODO O HTML LIMPO AQUI -->
+<title>ARCTURUS v8.0 - Scientific Integrity Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root { --navy:#080F1A; --navy-mid:#0D1B2E; --navy-card:#111E33; --navy-light:#1A2E4A; --steel:#2D4A6B; --ice:#EEF2F7; --white:#FFFFFF; --amber:#F0A500; --amber-glow:rgba(240,165,0,0.12); --amber-dim:#7A5400; --green:#00D97E; --green-dim:rgba(0,217,126,0.12); --red:#FF4D6A; --red-dim:rgba(255,77,106,0.12); --muted:#7A96B2; --border:rgba(120,160,200,0.14); --scan:rgba(240,165,0,0.06); --font-display:'Space Grotesk', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'JetBrains Mono', monospace; --radius:10px; --radius-lg:16px; } *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; } html { scroll-behavior: smooth; } body { background: var(--navy); color: var(--ice); font-family: var(--font-body); font-size: 15px; line-height: 1.65; overflow-x: hidden; }
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 2.5rem; background: rgba(8,15,26,0.9); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+.nav-logo { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.14em; color: var(--amber); text-decoration: none; display: flex; align-items: center; gap: 0.7rem; }
+.nav-logo-dot { width: 6px; height: 6px; background: var(--amber); border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+.nav-badge { font-family: var(--font-mono); font-size: 0.62rem; color: var(--amber); background: var(--amber-glow); border: 1px solid rgba(240,165,0,0.25); border-radius: 4px; padding: 0.15rem 0.5rem; letter-spacing: 0.08em; }
+.nav-links { display: flex; gap: 2rem; list-style: none; } .nav-links a { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.07em; color: var(--muted); text-decoration: none; text-transform: uppercase; transition: color 0.2s; } .nav-links a:hover { color: var(--white); }
+.hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 5rem; padding: 9.5rem 2.5rem 5rem; max-width: 1200px; margin: 0 auto; }
+.hero-eyebrow { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.22em; color: var(--amber); text-transform: uppercase; margin-bottom: 1.4rem; } .hero-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--amber); }
+.hero-title { font-family: var(--font-display); font-size: clamp(2.6rem, 4.5vw, 4rem); font-weight: 700; line-height: 1.06; letter-spacing: -0.03em; color: var(--white); margin-bottom: 1.6rem; } .hero-title em { font-style: normal; color: var(--amber); }
+.hero-sub { font-size: 0.97rem; color: var(--muted); line-height: 1.8; margin-bottom: 2.5rem; max-width: 430px; }
+.hero-stats { display: flex; gap: 2.5rem; margin-bottom: 2.8rem; } .hero-stat-val { font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; color: var(--white); line-height: 1; margin-bottom: 0.2rem; } .hero-stat-val span { color: var(--amber); } .hero-stat-label { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.hero-cta-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.8rem; background: var(--amber); color: var(--navy); font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.03em; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; transition: transform 0.15s, box-shadow 0.2s; } .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(240,165,0,0.35); }
+.btn-ghost { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.5rem; background: transparent; color: var(--muted); font-family: var(--font-display); font-size: 0.9rem; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: color 0.2s, border-color 0.2s; text-decoration: none; } .btn-ghost:hover { color: var(--white); border-color: var(--muted); }
+.scanner-wrap { position: relative; background: var(--navy-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; overflow: hidden; }
+.scanner-beam { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--amber), transparent); animation: scan-beam 3.5s ease-in-out infinite; opacity: 0.8; }
+@keyframes scan-beam { 0% { top: 0; opacity: 0; } 5% { opacity: 0.8; } 95% { opacity: 0.8; } 100% { top: 100%; opacity: 0; } }
+.scanner-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; } .scanner-title { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; } .scanner-status { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.62rem; color: var(--green); letter-spacing: 0.1em; } .scanner-status::before { content: ''; display: block; width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse-dot 1.8s ease-in-out infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.scanner-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; } .scanner-metric { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; } .sm-value { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--amber); line-height: 1; margin-bottom: 0.2rem; } .sm-label { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.scanner-auc { background: var(--navy-mid); border: 1px solid rgba(240,165,0,0.2); border-radius: 8px; padding: 1rem 1.1rem; display: flex; align-items: center; justify-content: space-between; } .scanner-auc .sm-value { color: var(--amber); } .auc-bar-wrap { width: 100px; height: 4px; background: var(--navy-light); border-radius: 99px; overflow: hidden; } .auc-bar { height: 100%; background: linear-gradient(90deg, var(--green), var(--amber)); border-radius: 99px; width: 90.88%; }
+section { padding: 5.5rem 2.5rem; } .section-inner { max-width: 1140px; margin: 0 auto; } .section-label { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.22em; color: var(--amber); text-transform: uppercase; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem; } .section-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--amber); } .section-title { font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 600; color: var(--white); margin-bottom: 0.9rem; letter-spacing: -0.025em; line-height: 1.15; } .section-desc { color: var(--muted); max-width: 540px; margin-bottom: 3rem; line-height: 1.8; font-size: 0.93rem; }
+.nav-radar { display: flex; align-items: center; gap: 0.5rem; } .radar-mini { width: 28px; height: 28px; animation: radar-spin 6s linear infinite; flex-shrink: 0; } @keyframes radar-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } @media (prefers-reduced-motion: reduce) { .radar-mini { animation: none; } }
+.domain-bar { background: var(--navy); border-bottom: 1px solid var(--border); padding: 0.85rem 2.5rem; position: sticky; top: 57px; z-index: 150; overflow-x: auto; scrollbar-width: none; } .domain-bar::-webkit-scrollbar { display: none; } .domain-list { display: flex; gap: 0.5rem; min-width: max-content; } .domain-btn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 1rem; background: var(--navy-card); border: 1px solid var(--border); border-radius: 99px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.04em; } .domain-btn:hover { border-color: var(--amber); color: var(--ice); } .domain-btn.active { background: var(--amber-glow); border-color: var(--amber); color: var(--amber); } .domain-badge { font-size: 0.6rem; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600; letter-spacing: 0.06em; } .badge-valid { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,217,126,0.25); } .badge-demo { background: rgba(120,160,200,0.1); color: var(--muted); border: 1px solid var(--border); } .domain-info { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 1rem; background: var(--navy-mid); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; } .domain-info-icon { font-size: 1.1rem; } .domain-info-text { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); line-height: 1.5; } .domain-info-text strong { color: var(--amber); }
+#demo { background: var(--navy-mid); } .demo-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; } .input-panel { display: flex; flex-direction: column; gap: 1rem; } .input-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; } #abstract-input { width: 100%; min-height: 240px; padding: 1.2rem; background: var(--navy); border: 1px solid var(--border); border-radius: var(--radius); color: var(--ice); font-family: var(--font-body); font-size: 0.88rem; line-height: 1.7; resize: vertical; outline: none; transition: border-color 0.2s, box-shadow 0.2s; } #abstract-input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-glow); } #abstract-input::placeholder { color: var(--steel); } .input-actions { display: flex; gap: 0.7rem; flex-wrap: wrap; } .btn-sm { padding: 0.6rem 1.1rem; background: transparent; color: var(--muted); font-family: var(--font-display); font-size: 0.8rem; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: color 0.2s, border-color 0.2s; } .btn-sm:hover { color: var(--white); border-color: var(--muted); }
+.result-panel { background: var(--navy); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; min-height: 380px; display: flex; flex-direction: column; gap: 1.5rem; position: relative; overflow: hidden; } .result-scanning-beam { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--amber), transparent); opacity: 0; transition: opacity 0.3s; } .result-panel.scanning .result-scanning-beam { opacity: 1; animation: scan-beam 1.5s ease-in-out infinite; } .result-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.8rem; color: var(--steel); text-align: center; } .empty-icon { width: 48px; height: 48px; border: 1.5px solid var(--steel); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; opacity: 0.5; } .result-empty p { font-size: 0.82rem; line-height: 1.6; }
+.score-display { text-align: center; padding-bottom: 1rem; border-bottom: 1px solid var(--border); } .score-number { font-family: var(--font-display); font-size: 4rem; font-weight: 700; line-height: 1; margin-bottom: 0.3rem; } .score-of { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem; } .score-track { height: 5px; background: var(--navy-mid); border-radius: 99px; overflow: hidden; margin-bottom: 0.8rem; } .score-fill { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.16,1,0.3,1); } .verdict-pill { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.35rem 0.9rem; border-radius: 99px; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; font-weight: 500; } .verdict-high { background: var(--red-dim); color: #FF6B7A; border: 1px solid rgba(255,77,106,0.3); } .verdict-medium { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(240,165,0,0.3); } .verdict-low { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,217,126,0.25); }
+.feat-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; } .feat-mini { background: var(--navy-mid); border-radius: 6px; padding: 0.6rem 0.8rem; } .feat-mini-name { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 0.15rem; } .feat-mini-val { font-family: var(--font-mono); font-size: 0.88rem; color: var(--ice); font-weight: 500; }
+.shap-section { display: flex; flex-direction: column; gap: 0.5rem; } .shap-row { display: grid; grid-template-columns: 120px 1fr 44px; align-items: center; gap: 0.7rem; } .shap-name { font-family: var(--font-mono); font-size: 0.64rem; color: var(--muted); letter-spacing: 0.06em; } .shap-track { height: 5px; background: var(--navy-mid); border-radius: 99px; overflow: hidden; } .shap-bar { height: 100%; border-radius: 99px; transition: width 0.9s cubic-bezier(0.16,1,0.3,1); } .shap-val { font-family: var(--font-mono); font-size: 0.7rem; text-align: right; }
+.flags-wrap { display: flex; flex-wrap: wrap; gap: 0.4rem; } .flag { padding: 0.22rem 0.65rem; background: rgba(240,165,0,0.08); border: 1px solid rgba(240,165,0,0.22); border-radius: 4px; font-size: 0.66rem; color: var(--amber); font-family: var(--font-mono); } .result-disclaimer { font-size: 0.68rem; color: var(--steel); line-height: 1.5; }
+#metricas { background: var(--navy); } .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-bottom: 3.5rem; } .metric-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem 1.4rem; position: relative; overflow: hidden; transition: border-color 0.3s; } .metric-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--amber), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.7s cubic-bezier(0.16,1,0.3,1); } .metric-card.visible::after { transform: scaleX(1); } .metric-val { font-family: var(--font-display); font-size: 2.1rem; font-weight: 700; color: var(--white); line-height: 1; margin-bottom: 0.4rem; } .metric-val span { color: var(--amber); } .metric-name { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.2rem; } .metric-sub { font-family: var(--font-mono); font-size: 0.65rem; color: var(--amber); opacity: 0.8; }
+.cm-section { display: flex; gap: 4rem; align-items: flex-start; flex-wrap: wrap; } .cm-label-top { font-family: var(--font-mono); font-size: 0.64rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; } .cm-grid { display: grid; grid-template-columns: auto 90px 90px; grid-template-rows: auto 75px 75px; gap: 4px; } .cm-h { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); text-align: center; padding: 0.3rem; letter-spacing: 0.08em; } .cm-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 6px; font-family: var(--font-mono); } .cm-n { font-size: 1.5rem; font-weight: 600; line-height: 1; } .cm-l { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.07em; margin-top: 0.2rem; } .cm-tp { background: rgba(0,217,126,0.15); color: var(--green); } .cm-tn { background: rgba(0,217,126,0.08); color: var(--green); } .cm-fp { background: rgba(255,77,106,0.12); color: #FF7E8E; } .cm-fn { background: rgba(255,77,106,0.08); color: #FF7E8E; } .cm-notes { max-width: 380px; } .cm-note { font-size: 0.85rem; color: var(--muted); line-height: 1.75; margin-bottom: 0.9rem; } .cm-note strong { color: var(--ice); }
+#features { background: var(--navy-mid); } .fi-list { display: flex; flex-direction: column; gap: 0.7rem; max-width: 620px; } .fi-row { display: grid; grid-template-columns: 170px 1fr 56px; align-items: center; gap: 1rem; } .fi-name { font-family: var(--font-mono); font-size: 0.76rem; color: var(--muted); } .fi-track { height: 6px; background: var(--navy); border-radius: 99px; overflow: hidden; } .fi-bar { height: 100%; background: linear-gradient(90deg, var(--amber), rgba(240,165,0,0.4)); border-radius: 99px; width: 0; transition: width 1.1s cubic-bezier(0.16,1,0.3,1); } .fi-pct { font-family: var(--font-mono); font-size: 0.76rem; color: var(--amber); text-align: right; }
+#validacao { background: var(--navy); } .validation-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; } .val-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem 1.6rem; position: relative; overflow: hidden; } .val-card::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 3px; } .val-card.legit::before { background: var(--green); } .val-card.fraude::before { background: var(--red); } .val-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; } .val-source { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; } .val-score-badge { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; } .val-card.legit .val-score-badge { color: var(--green); } .val-card.fraude .val-score-badge { color: var(--red); } .val-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.65; margin-bottom: 0.8rem; } .val-verdict { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.06em; } .val-card.legit .val-verdict { color: var(--green); } .val-card.fraude .val-verdict { color: var(--red); } .val-gap-note { margin-top: 2rem; background: var(--navy-card); border: 1px solid rgba(240,165,0,0.15); border-radius: var(--radius); padding: 1.2rem 1.5rem; font-size: 0.85rem; color: var(--muted); line-height: 1.75; } .val-gap-note strong { color: var(--amber); }
+#metodologia { background: var(--navy-mid); } .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; } .method-card { background: var(--navy); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.6rem; } .method-icon { font-size: 1.4rem; margin-bottom: 0.9rem; } .method-title { font-family: var(--font-display); font-size: 0.97rem; font-weight: 600; color: var(--white); margin-bottom: 0.5rem; } .method-text { font-size: 0.83rem; color: var(--muted); line-height: 1.75; } .method-tag { display: inline-block; margin-top: 0.9rem; padding: 0.18rem 0.55rem; background: var(--amber-glow); border: 1px solid rgba(240,165,0,0.18); border-radius: 4px; font-family: var(--font-mono); font-size: 0.62rem; color: var(--amber); letter-spacing: 0.1em; }
+#roadmap { background: var(--navy); } .roadmap-list { position: relative; padding-left: 2.2rem; max-width: 700px; } .roadmap-list::before { content: ''; position: absolute; left: 7px; top: 12px; bottom: 12px; width: 1px; background: var(--border); } .roadmap-item { position: relative; padding: 0 0 2.8rem 2rem; } .roadmap-item::before { content: ''; position: absolute; left: -2.15rem; top: 10px; width: 12px; height: 12px; border-radius: 50%; background: var(--navy-mid); border: 2px solid var(--border); } .roadmap-item.done::before { background: var(--green); border-color: var(--green); box-shadow: 0 0 10px rgba(0,217,126,0.4); } .roadmap-item.active::before { background: var(--amber); border-color: var(--amber); box-shadow: 0 0 12px rgba(240,165,0,0.5); animation: pulse-dot 2s ease-in-out infinite; } .roadmap-ver { font-family: var(--font-mono); font-size: 0.66rem; color: var(--amber); letter-spacing: 0.1em; margin-bottom: 0.3rem; } .roadmap-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; } .roadmap-desc { font-size: 0.84rem; color: var(--muted); line-height: 1.65; }
+footer { background: var(--navy-mid); border-top: 1px solid var(--border); padding: 3rem 2.5rem; text-align: center; } .footer-logo { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--amber); letter-spacing: 0.16em; margin-bottom: 0.4rem; } .footer-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; } .footer-author { font-family: var(--font-mono); font-size: 0.68rem; color: var(--steel); letter-spacing: 0.07em; } .footer-quote { font-family: var(--font-mono); font-size: 0.72rem; color: var(--amber); opacity: 0.6; margin-top: 0.8rem; font-style: italic; }
+hr.divider { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; } .hidden { display: none !important; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; padding-top: 6.5rem; gap: 3rem; } .demo-layout { grid-template-columns: 1fr; } .metrics-row { grid-template-columns: 1fr 1fr; } .method-grid { grid-template-columns: 1fr; } .validation-grid { grid-template-columns: 1fr; } nav { padding: 0.9rem 1.5rem; } .nav-links { gap: 1.2rem; } }
+@media (max-width: 600px) { .hero { padding: 6rem 1.2rem 4rem; } section { padding: 4rem 1.2rem; } .metrics-row { grid-template-columns: 1fr 1fr; gap: 0.8rem; } .fi-row { grid-template-columns: 120px 1fr 48px; } .nav-links { display: none; } .hero-stats { gap: 1.8rem; } }
+@media (prefers-reduced-motion: reduce) { .scanner-beam, .result-scanning-beam { animation: none; } }
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="#">
+    <svg class="radar-mini" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="18" stroke="#2D4A6B" stroke-width="1"/>
+      <circle cx="20" cy="20" r="12" stroke="#2D4A6B" stroke-width="1"/>
+      <circle cx="20" cy="20" r="6" stroke="#2D4A6B" stroke-width="1"/>
+      <line x1="20" y1="2" x2="20" y2="38" stroke="#2D4A6B" stroke-width="0.8"/>
+      <line x1="2" y1="20" x2="38" y2="20" stroke="#2D4A6B" stroke-width="0.8"/>
+      <path d="M20 20 L20 2 A18 18 0 0 1 38 20 Z" fill="url(#rsweep)" opacity="0.7"/>
+      <circle cx="20" cy="20" r="2.5" fill="#F0A500"/>
+      <circle cx="28" cy="13" r="2.5" fill="#FF4D6A" opacity="0.9">
+        <animate attributeName="opacity" values="0.9;0.1;0.9" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="13" cy="27" r="1.8" fill="#F0A500" opacity="0.7">
+        <animate attributeName="opacity" values="0.7;0.1;0.7" dur="3.1s" repeatCount="indefinite"/>
+      </circle>
+      <defs>
+        <linearGradient id="rsweep" x1="20" y1="20" x2="38" y2="2" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F0A500" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#F0A500" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    ARCTURUS
+    <span class="nav-badge">v8.0</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#demo">Analise</a></li>
+    <li><a href="#metricas">Metricas</a></li>
+    <li><a href="#validacao">Validacao</a></li>
+    <li><a href="#features">Explicabilidade</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+  </ul>
+</nav>
+
+<div class="domain-bar">
+  <div class="domain-list">
+    <button class="domain-btn active" onclick="setDomain('bio')" id="btn-bio">[BIO] Biomedicina <span class="domain-badge badge-valid">[OK] Validado</span></button>
+    <button class="domain-btn" onclick="setDomain('mat')" id="btn-mat">[MAT] Matematica <span class="domain-badge badge-demo">[DEMO] Demo</span></button>
+    <button class="domain-btn" onclick="setDomain('fin')" id="btn-fin">[FIN] Financas <span class="domain-badge badge-demo">[DEMO] Demo</span></button>
+    <button class="domain-btn" onclick="setDomain('ast')" id="btn-ast">[AST] Astronomia <span class="domain-badge badge-demo">[DEMO] Demo</span></button>
+    <button class="domain-btn" onclick="setDomain('psi')" id="btn-psi">[PSI] Psicologia <span class="domain-badge badge-demo">[DEMO] Demo</span></button>
+    <button class="domain-btn" onclick="setDomain('dir')" id="btn-dir">[DIR] Direito <span class="domain-badge badge-demo">[DEMO] Demo</span></button>
+    <button class="domain-btn" onclick="setDomain('soc')" id="btn-soc">[SOC] Ciencias Sociais <span class="domain-badge badge-demo">[DEMO] Demo</span></button>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-text">
+    <p class="hero-eyebrow">Scientific Integrity Screening * Open Source</p>
+    <h1 class="hero-title">Triagem de<br><em>Integridade</em><br>Cientifica</h1>
+    <p class="hero-sub">ARCTURUS analisa abstracts cientificos e calcula um score de risco para deteccao de ma conduta -- com XGBoost, UMAP e explicabilidade SHAP. Desenvolvido com dados reais do OpenAlex. Validado externamente.</p>
+    <div class="hero-stats">
+      <div><div class="hero-stat-val">90<span>.88%</span></div><div class="hero-stat-label">AUC-ROC</div></div>
+      <div><div class="hero-stat-val">497</div><div class="hero-stat-label">Amostras</div></div>
+      <div><div class="hero-stat-val">75<span>%</span></div><div class="hero-stat-label">Recall</div></div>
+    </div>
+    <div class="hero-cta-group">
+      <a class="btn-primary" href="#demo">Analisar abstract -></a>
+      <a class="btn-ghost" href="https://github.com/deegpnini/arcturus-integrity" target="_blank">GitHub -></a>
+    </div>
+  </div>
+  <div class="scanner-wrap">
+    <div class="scanner-beam"></div>
+    <div class="scanner-header">
+      <span class="scanner-title">ARCTURUS Engine * XGBoost + UMAP</span>
+      <span class="scanner-status">ONLINE</span>
+    </div>
+    <div class="scanner-metrics">
+      <div class="scanner-metric"><div class="sm-value">90.88%</div><div class="sm-label">AUC-ROC</div></div>
+      <div class="scanner-metric"><div class="sm-value">88%</div><div class="sm-label">Acurcia</div></div>
+      <div class="scanner-metric"><div class="sm-value">75%</div><div class="sm-label">Recall</div></div>
+      <div class="scanner-metric"><div class="sm-value">0.35</div><div class="sm-label">Threshold</div></div>
+    </div>
+    <div class="scanner-auc">
+      <div><div class="sm-value">90.88%</div><div class="sm-label">Area sob a curva ROC</div></div>
+      <div><div class="auc-bar-wrap"><div class="auc-bar"></div></div><div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);margin-top:0.3rem;text-align:right">0.00 -> 1.00</div></div>
+    </div>
+    <div style="margin-top:1.2rem;padding:0.9rem;background:var(--navy-mid);border-radius:8px;border:1px solid var(--border)">
+      <div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;margin-bottom:0.5rem">PIPELINE</div>
+      <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--ice);line-height:1.8">OpenAlex -> 9 features + embeddings<br>UMAP dimensionality reduction<br>XGBoost * BorderlineSMOTE<br>SHAP explainability</div>
+    </div>
+  </div>
+</div>
+
+<section id="demo">
+  <div class="section-inner">
+    <p class="section-label">Ferramenta</p>
+    <h2 class="section-title">Analisar Abstract</h2>
+    <p class="section-desc">Cole o abstract de um artigo cientifico. O ARCTURUS extrai 9 features textuais, calcula o score de risco e exibe a contribuicao de cada feature (SHAP-style).</p>
+    <div class="demo-layout">
+      <div class="input-panel">
+        <div class="domain-info" id="domain-info"><span class="domain-info-icon">[BIO]</span><div class="domain-info-text"><strong>Biomedicina</strong> -- Modelo validado externamente * AUC-ROC 90.88% * 497 amostras reais</div></div>
+        <label class="input-label" for="abstract-input">Abstract do artigo</label>
+        <textarea id="abstract-input" placeholder="Cole aqui o abstract para analise...&#10;&#10;Exemplo: 'This study investigates the novel application of...'"></textarea>
+        <div class="input-actions">
+          <button class="btn-primary" onclick="analisar()">Analisar -></button>
+          <button class="btn-sm" onclick="carregarExemploDominio()">Exemplo do dominio</button>
+          <button class="btn-sm" onclick="carregarExemplo('legit')">Legitimo</button>
+          <button class="btn-sm" onclick="limpar()">Limpar</button>
+        </div>
+      </div>
+      <div class="result-panel" id="result-panel">
+        <div class="result-scanning-beam" id="scan-beam"></div>
+        <div class="result-empty" id="result-empty">
+          <div class="empty-icon">O</div>
+          <p>O resultado aparecera aqui.<br>Cole um abstract e clique em Analisar.</p>
+        </div>
+        <div class="hidden" id="result-content">
+          <div class="score-display">
+            <div class="score-number" id="res-score">--</div>
+            <div class="score-of">Score de Risco * 0-100</div>
+            <div class="score-track"><div class="score-fill" id="res-bar"></div></div>
+            <div id="res-verdict" class="verdict-pill" style="margin-top:0.6rem"></div>
+          </div>
+          <div>
+            <div class="input-label" style="margin-bottom:0.7rem">Contribuicao por feature (SHAP-style)</div>
+            <div class="shap-section" id="res-shap"></div>
+          </div>
+          <hr class="divider">
+          <div>
+            <div class="input-label" style="margin-bottom:0.6rem">Features extraidas</div>
+            <div class="feat-mini-grid" id="res-features"></div>
+          </div>
+          <div id="flags-section" class="hidden">
+            <div class="input-label" style="margin-bottom:0.5rem">Sinais detectados</div>
+            <div class="flags-wrap" id="res-flags"></div>
+          </div>
+          <p class="result-disclaimer">(!) Score indicativo. Revisao humana obrigatoria. Nao substitui analise editorial.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="metricas">
+  <div class="section-inner">
+    <p class="section-label">Validacao v8.0</p>
+    <h2 class="section-title">Performance do Modelo</h2>
+    <p class="section-desc">497 amostras reais (100 paper mills + 397 controles legítimos). Threshold otimizado via curva ROC. Validacao com abstracts externos nunca vistos durante o treinamento.</p>
+    <div class="metrics-row">
+      <div class="metric-card"><div class="metric-val">90<span>.88%</span></div><div class="metric-name">AUC-ROC</div><div class="metric-sub">Discriminacao excelente</div></div>
+      <div class="metric-card"><div class="metric-val">88<span>%</span></div><div class="metric-name">Acurcia</div><div class="metric-sub">Threshold 0.35</div></div>
+      <div class="metric-card"><div class="metric-val">75<span>%</span></div><div class="metric-name">Recall (Classe 1)</div><div class="metric-sub">Detecao de fraude</div></div>
+      <div class="metric-card"><div class="metric-val">497</div><div class="metric-name">Amostras no dataset</div><div class="metric-sub">100 casos * 397 controles</div></div>
+    </div>
+    <div class="cm-section">
+      <div>
+        <div class="cm-label-top">Matriz de Confusao * Hold-out Externo</div>
+        <div class="cm-grid">
+          <div></div>
+          <div class="cm-h">PREV: FRAUDE</div><div class="cm-h">PREV: LEGITIMO</div>
+          <div class="cm-h" style="text-align:right;padding-right:0.6rem">REAL: FRAUDE</div>
+          <div class="cm-cell cm-tp"><span class="cm-n">31</span><span class="cm-l">TP</span></div><div class="cm-cell cm-fn"><span class="cm-n">8</span><span class="cm-l">FN</span></div>
+          <div class="cm-h" style="text-align:right;padding-right:0.6rem">REAL: LEGITIMO</div>
+          <div class="cm-cell cm-fp"><span class="cm-n">12</span><span class="cm-l">FP</span></div><div class="cm-cell cm-tn"><span class="cm-n">6</span><span class="cm-l">TN</span></div>
+        </div>
+      </div>
+      <div class="cm-notes">
+        <p class="cm-note"><strong>31 verdadeiros positivos</strong> -- artigos de paper mills corretamente sinalizados pelo modelo.</p>
+        <p class="cm-note"><strong>8 falsos negativos</strong> -- casos reais nao detectados. Analise manual para identificar padroes em andamento.</p>
+        <p class="cm-note"><strong>12 falsos positivos</strong> -- artigos legítimos sinalizados. Taxa esperada em triagem de primeira passagem.</p>
+        <p class="cm-note" style="font-size:0.75rem;color:var(--steel)">Hold-out separado antes de qualquer treinamento. Usado uma unica vez para avaliacao final.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="validacao">
+  <div class="section-inner">
+    <p class="section-label">Prova Social</p>
+    <h2 class="section-title">Validacao com Abstracts Reais</h2>
+    <p class="section-desc">Testes com abstracts externos para verificar a separacao entre artigos legítimos e suspeitos. Separacao de +66 pontos garante distincao clara.</p>
+    <div class="validation-grid">
+      <div class="val-card legit">
+        <div class="val-header"><span class="val-source">USP * Biomedicina</span><span class="val-score-badge">1.3</span></div>
+        <p class="val-desc">Abstract de pesquisa universitaria brasileira da USP. Escrita tecnica, terminologia precisa, ausencia de frases padronizadas de paper mills.</p>
+        <div class="val-verdict">v Legitimo -- Score 1.3/100</div>
+      </div>
+      <div class="val-card fraude">
+        <div class="val-header"><span class="val-source">Paper Mill Simulado</span><span class="val-score-badge">72.6</span></div>
+        <p class="val-desc">Abstract com padroes tipicos de fabricas de artigos: frases genericas, repeticao excessiva, adjetivos impactantes sem substancia ("novel", "significant", "innovative").</p>
+        <div class="val-verdict">(!) Alto Risco -- Score 72.6/100</div>
+      </div>
+      <div class="val-card legit">
+        <div class="val-header"><span class="val-source">COVID-19 * Estudo Legitimo</span><span class="val-score-badge">14.8</span></div>
+        <p class="val-desc">Publicacao biomedica sobre COVID-19 de periodico indexado. Linguagem tecnica especifica, metodologia clara, sem marcadores suspeitos.</p>
+        <div class="val-verdict">v Legitimo -- Score 14.8/100</div>
+      </div>
+      <div class="val-card legit">
+        <div class="val-header"><span class="val-source">Oncologia * Estudo de Cancer</span><span class="val-score-badge">1.3</span></div>
+        <p class="val-desc">Pesquisa clinica em oncologia com metodologia rigorosa. Diversidade lexical alta, entropia adequada, nenhum sinal de papermill detectado.</p>
+        <div class="val-verdict">v Legitimo -- Score 1.3/100</div>
+      </div>
+    </div>
+    <div class="val-gap-note"><strong>Separacao de +66 pontos</strong> entre artigos legítimos (media 5.8/100) e suspeitos (72.6/100) demonstra que o modelo aprendeu padroes estruturais reais de ma conduta cientifica, nao apenas memorizacao do conjunto de treinamento.</div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-inner">
+    <p class="section-label">Explicabilidade * SHAP</p>
+    <h2 class="section-title">Importancia das Features</h2>
+    <p class="section-desc">Contribuicao de cada feature para as decisoes do modelo (Gini importance). O modelo aprende padroes de escrita -- estrutura, nao topico.</p>
+    <div class="fi-list" id="fi-list"></div>
+  </div>
+</section>
+
+<section id="metodologia">
+  <div class="section-inner">
+    <p class="section-label">Como funciona</p>
+    <h2 class="section-title">Metodologia</h2>
+    <p class="section-desc">Pipeline transparente e reproduzivel -- do dado bruto ao score final com explicabilidade.</p>
+    <div class="method-grid">
+      <div class="method-card"><div class="method-icon">[RADAR]</div><div class="method-title">Coleta de Dados</div><div class="method-text">Artigos retratados coletados via OpenAlex API. 100 casos confirmados de paper mills + 397 controles legítimos pareados por area e periodo (2018-2024).</div><div class="method-tag">OpenAlex * Crossref</div></div>
+      <div class="method-card"><div class="method-icon">[PSI]</div><div class="method-title">Feature Engineering</div><div class="method-text">9 features textuais manuais + embeddings multilíngues (Sentence-Transformers). O <em style="color:var(--amber)">papermill_index</em> e uma combinacao ponderada de tokens e frases suspeitas.</div><div class="method-tag">9 features * Embeddings</div></div>
+      <div class="method-card"><div class="method-icon">[MAP]</div><div class="method-title">UMAP + XGBoost</div><div class="method-text">Reducao de dimensionalidade com UMAP para visualizacao e clustering. Classificacao com XGBoost (scale_pos_weight) + BorderlineSMOTE para balanceamento.</div><div class="method-tag">XGBoost * UMAP * SMOTE</div></div>
+      <div class="method-card"><div class="method-icon">[CHART]</div><div class="method-title">Explicabilidade SHAP</div><div class="method-text">Cada predicao acompanhada de explicacao das top features via SHAP values. Transparencia total: sabe-se exatamente por que um abstract foi sinalizado.</div><div class="method-tag">SHAP * Interpretabilidade</div></div>
+      <div class="method-card"><div class="method-icon">[DIR]</div><div class="method-title">Limitacoes Declaradas</div><div class="method-text">497 amostras ainda e dataset modesto. Features textuais simples nao capturam fraude sofisticada. Escopo atual: biomedicina em ingles. Falsos positivos esperados em triagem.</div><div class="method-tag">Triagem * Nao diagnostico</div></div>
+      <div class="method-card"><div class="method-icon">[BOOK]</div><div class="method-title">Codigo Aberto</div><div class="method-text">Pipeline completo disponivel no GitHub para reproducao. Dataset baseado em abstracts publicos via OpenAlex. Preprint em preparacao para OSF Preprints.</div><div class="method-tag">Open Source * OSF Preprint</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="section-inner">
+    <p class="section-label">Evolucao</p>
+    <h2 class="section-title">Roadmap</h2>
+    <p class="section-desc">Do prototipo ao produto -- cada versao com validacao honesta e metricas reais.</p>
+    <div class="roadmap-list">
+      <div class="roadmap-item done"><div class="roadmap-ver">v4.2 -- v6.3</div><div class="roadmap-title">Prova de Conceito</div><div class="roadmap-desc">Dataset inicial de 48 artigos -> expansao para 285. Feature engineering, correcao de bugs, pipeline de coleta via OpenAlex. Modelo Random Forest baseline.</div></div>
+      <div class="roadmap-item done"><div class="roadmap-ver">v7.0</div><div class="roadmap-title">Validacao Externa</div><div class="roadmap-desc">Hold-out de 57 artigos separado antes do treino. Gap de 7.5 pp entre CV interno e externo. Generalizacao confirmada. Interface multi-dominio com 7 areas.</div></div>
+      <div class="roadmap-item active"><div class="roadmap-ver">v8.0 * Atual</div><div class="roadmap-title">XGBoost + UMAP + SHAP</div><div class="roadmap-desc">AUC-ROC de 90.88%. Dataset expandido para 497 amostras. XGBoost substituindo Random Forest. Embeddings multilíngues com Sentence-Transformers. Explicabilidade SHAP.</div></div>
+      <div class="roadmap-item"><div class="roadmap-ver">v9.0 * Planejado</div><div class="roadmap-title">API Publica + OSF Preprint</div><div class="roadmap-desc">Endpoint REST para submissao de DOIs. Dashboard com explicabilidade SHAP completa. Publicacao no OSF Preprints. Analise de rede de coautoria.</div></div>
+      <div class="roadmap-item"><div class="roadmap-ver">v10.0 * Futuro</div><div class="roadmap-title">Produto SaaS</div><div class="roadmap-desc">SaaS para editoras e instituicoes. Planos Starter e Pro. Auditoria institucional. Parceria estrategica com Retraction Watch.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">ARCTURUS</div>
+  <div class="footer-sub">Scientific Integrity Risk Screening * v8.0 * Open Source</div>
+  <div class="footer-author">Desenvolvido por Helyton Renato Goncalves Ronchi * Balneario Rincao, SC, Brasil</div>
+  <div class="footer-author" style="margin-top:0.2rem"><a href="https://github.com/deegpnini/arcturus-integrity" target="_blank" style="color:var(--muted);text-decoration:none;">github.com/deegpnini/arcturus-integrity</a></div>
+  <div class="footer-quote">"Tecnologia com alma, dados com proposito, codigo com coracao."</div>
+</footer>
+
+<script>
+const DOMAINS = {
+  bio: { icon: '[BIO]', label: 'Biomedicina', validated: true, info: '<strong>Biomedicina</strong> -- Modelo validado externamente * AUC-ROC 90.88% * 497 amostras reais', placeholder: 'Cole o abstract biomedical para analise...
+
+Ex: "This study investigates the novel application of..."', example: 'This novel study demonstrates the significant and unprecedented effectiveness of our innovative approach to the treatment of diabetic retinopathy using advanced machine learning techniques. To the best of our knowledge, this is the first study to investigate this important research gap. Our comprehensive analysis shows promising and robust results. The novel findings suggest that our cutting-edge methodology achieves state-of-the-art performance. Further studies are needed to confirm these groundbreaking results. We demonstrate herein that our unique approach fills the gap in existing literature. The innovative results are significant and the methodology is comprehensive and novel.' },
+  mat: { icon: '[MAT]', label: 'Matematica', validated: false, info: '<strong>Matematica</strong> -- Modo Demo * Features calibradas para biomedicina * Resultados indicativos', placeholder: 'Cole o abstract matematico para analise...
+
+Ex: "We present a novel proof of..."', example: 'We present a novel and significant contribution to the field of algebraic topology, demonstrating unprecedented results in the study of manifold decomposition. To the best of our knowledge, this is the first comprehensive investigation of this important research gap. Our innovative methodology achieves state-of-the-art results and fills a critical void in the literature. The novel approach herein demonstrates significant promise. Further studies are needed to confirm these groundbreaking theorems. We demonstrate that our unique framework represents a significant advance in the field.' },
+  fin: { icon: '[FIN]', label: 'Financas', validated: false, info: '<strong>Financas</strong> -- Modo Demo * Features calibradas para biomedicina * Resultados indicativos', placeholder: 'Cole o abstract de financas para analise...
+
+Ex: "This paper examines the impact of..."', example: 'This novel study presents significant and unprecedented findings on the impact of quantitative easing on emerging market volatility. To the best of our knowledge, this is the first comprehensive investigation of this important research gap. Our innovative econometric methodology achieves state-of-the-art predictive performance. The novel findings suggest that our cutting-edge framework fills a critical gap in the literature. Further studies are needed to confirm these groundbreaking results. We demonstrate herein that our unique approach represents a significant contribution to financial theory.' },
+  ast: { icon: '[AST]', label: 'Astronomia', validated: false, info: '<strong>Astronomia</strong> -- Modo Demo * Features calibradas para biomedicina * Resultados indicativos', placeholder: 'Cole o abstract astronomico para analise...
+
+Ex: "We report the discovery of..."', example: 'We report the detection of significant and unprecedented spectral signatures in the photometric survey of 47 Tucanae globular cluster using novel adaptive optics techniques. Multi-epoch radial velocity measurements were obtained with the VLT/ESPRESSO spectrograph over 18 months. Bayesian inference on the full posterior distribution yields a stellar mass of M* = 0.82 +/- 0.04 MMsun and an orbital eccentricity of e = 0.31 +/- 0.02. The derived age of 12.3 +/- 0.8 Gyr is consistent with independent isochrone fitting. These results constrain nucleosynthetic yields and have implications for chemical evolution models of the Galactic halo.' },
+  psi: { icon: '[PSI]', label: 'Psicologia', validated: false, info: '<strong>Psicologia</strong> -- Modo Demo * Features calibradas para biomedicina * Resultados indicativos', placeholder: 'Cole o abstract psicologico para analise...
+
+Ex: "This study examines the relationship between..."', example: 'This novel study demonstrates the significant and unprecedented effectiveness of our innovative cognitive-behavioral intervention for treatment of social anxiety disorder in adolescents. To the best of our knowledge, this is the first comprehensive investigation of this important research gap. Our cutting-edge methodology achieves state-of-the-art outcomes across all measured domains. The novel findings herein suggest that our unique framework fills a critical void in the literature. Further studies are needed to confirm these groundbreaking results. We demonstrate that our innovative approach represents a significant advance.' },
+  dir: { icon: '[DIR]', label: 'Direito', validated: false, info: '<strong>Direito</strong> -- Modo Demo * Features calibradas para biomedicina * Resultados indicativos', placeholder: 'Cole o abstract juridico para analise...
+
+Ex: "This article examines the constitutional implications of..."', example: 'This article examines the constitutional implications of algorithmic decision-making in administrative law, focusing on due process requirements and transparency obligations. Drawing on comparative analysis of EU AI Act provisions and US administrative procedure, we identify three structural tensions in current regulatory frameworks: opacity of automated systems, accountability gaps in delegated authority, and incompatibility with adversarial procedural traditions. We propose a rights-based framework for algorithmic governance that preserves meaningful judicial review while accommodating technical complexity. Our analysis reveals that existing doctrinal tools require significant reinterpretation rather than wholesale replacement.' },
+  soc: { icon: '[SOC]', label: 'Ciencias Sociais', validated: false, info: '<strong>Ciencias Sociais</strong> -- Modo Demo * Features calibradas para biomedicina * Resultados indicativos', placeholder: 'Cole o abstract de ciencias sociais para analise...
+
+Ex: "This paper investigates the social determinants of..."', example: 'This novel study presents significant and unprecedented findings on the social determinants of digital exclusion in rural communities of the Global South. To the best of our knowledge, this is the first comprehensive mixed-methods investigation of this important research gap. Our innovative theoretical framework achieves state-of-the-art integration of structural and agency-based perspectives. The novel findings suggest that our cutting-edge approach fills a critical void in the sociological literature. Further studies are needed to confirm these groundbreaking conclusions. We demonstrate herein that our unique framework represents a significant contribution to social theory.' }
+};
+
+let currentDomain = 'bio';
+
+function setDomain(key) {
+  currentDomain = key;
+  const d = DOMAINS[key];
+  document.querySelectorAll('.domain-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('btn-' + key).classList.add('active');
+  document.getElementById('domain-info').querySelector('.domain-info-icon').textContent = d.icon;
+  document.getElementById('domain-info').querySelector('.domain-info-text').innerHTML = d.info;
+  const ta = document.getElementById('abstract-input');
+  ta.placeholder = d.placeholder;
+  ta.value = '';
+  limpar();
+}
+
+const FEATURES = [
+  { name: 'num_sentences', pct: 16.57 }, { name: 'avg_sentence_len', pct: 15.72 },
+  { name: 'word_count', pct: 12.50 }, { name: 'avg_word_length', pct: 11.44 },
+  { name: 'lexical_diversity', pct: 10.80 }, { name: 'repetition_rate', pct: 10.20 },
+  { name: 'rare_ratio', pct: 9.40 }, { name: 'papermill_index', pct: 7.37 },
+  { name: 'entropy', pct: 6.00 }
+];
+
+const fiList = document.getElementById('fi-list');
+FEATURES.forEach(f => {
+  const row = document.createElement('div');
+  row.className = 'fi-row';
+  row.innerHTML = '<span class="fi-name">' + f.name + '</span><div class="fi-track"><div class="fi-bar" data-pct="' + f.pct + '"></div></div><span class="fi-pct">' + f.pct + '%</span>';
+  fiList.appendChild(row);
+});
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    document.querySelectorAll('.fi-bar').forEach(b => { b.style.width = b.dataset.pct + '%'; });
+    document.querySelectorAll('.metric-card').forEach(c => c.classList.add('visible'));
+  });
+}, { threshold: 0.25 });
+
+const featSec = document.getElementById('features');
+if (featSec) io.observe(featSec);
+const metricSec = document.getElementById('metricas');
+if (metricSec) io.observe(metricSec);
+
+function extractFeatures(text) {
+  const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+  const n = words.length;
+  if (n === 0) return null;
+  const freq = {};
+  words.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+  const unique = Object.keys(freq).length;
+  const probs = Object.values(freq).map(v => v / n);
+  const entropy = -probs.reduce((s, p) => s + p * Math.log2(p + 1e-10), 0);
+  const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0);
+  const longSent = sentences.filter(s => s.split(/\s+/).length > 4);
+  const avgSentLen = longSent.length > 0 ? longSent.reduce((s, sent) => s + sent.split(/\s+/).length, 0) / longSent.length : 0;
+  const lexDiv = unique / n;
+  const repRate = 1 - lexDiv;
+  const rareCount = Object.values(freq).filter(v => v < 3).length;
+  const rareRatio = rareCount / n;
+  const avgWordLen = words.reduce((s, w) => s + w.replace(/[^a-z]/g, '').length, 0) / n;
+  const suspTokens = ['herein', 'hereby', 'hitherto', 'aforementioned', 'novel', 'innovative', 'significant', 'unprecedented'];
+  const suspPhrases = ['to the best of our knowledge', 'fill the gap', 'research gap', 'further studies are needed', 'our findings suggest', 'we demonstrate', 'in this study we', 'this study aims to', 'the present study', 'cutting-edge', 'state-of-the-art', 'groundbreaking'];
+  const textLower = text.toLowerCase();
+  const tokenHits = words.filter(w => suspTokens.includes(w)).length;
+  const phraseHits = suspPhrases.filter(f => textLower.includes(f)).length;
+  const papermillRaw = (tokenHits + phraseHits * 2.5) / Math.max(n / 100, 1);
+  const papermillIndex = Math.min(papermillRaw, 1);
+  return { word_count: n, repetition_rate: +repRate.toFixed(4), avg_word_length: +avgWordLen.toFixed(2), num_sentences: sentences.length, entropy: +entropy.toFixed(4), lexical_diversity: +lexDiv.toFixed(4), rare_ratio: +rareRatio.toFixed(4), avg_sentence_len: +avgSentLen.toFixed(2), papermill_index: +papermillIndex.toFixed(4) };
+}
+
+function calcScore(f) {
+  let score = 0;
+  score += f.repetition_rate * 30;
+  score += f.papermill_index * 25;
+  score += (1 - f.lexical_diversity) * 18;
+  score += (1 - f.rare_ratio) * 8;
+  if (f.word_count < 100) score += 12;
+  else if (f.word_count < 150) score += 6;
+  if (f.avg_sentence_len < 10) score += 6;
+  if (f.entropy < 3.5) score += 3;
+  return Math.min(Math.round(score), 100);
+}
+
+function getContributions(f, totalScore) {
+  const contributions = [
+    { name: 'repetition_rate', contrib: f.repetition_rate * 30, dir: 'risk' },
+    { name: 'papermill_index', contrib: f.papermill_index * 25, dir: 'risk' },
+    { name: 'lexical_diversity', contrib: (1 - f.lexical_diversity) * 18, dir: 'risk' },
+    { name: 'rare_ratio', contrib: (1 - f.rare_ratio) * 8, dir: 'risk' },
+    { name: 'word_count', contrib: f.word_count < 100 ? 12 : f.word_count < 150 ? 6 : 0, dir: 'risk' },
+    { name: 'avg_sentence_len', contrib: f.avg_sentence_len < 10 ? 6 : 0, dir: 'risk' },
+    { name: 'entropy', contrib: f.entropy < 3.5 ? 3 : 0, dir: 'risk' }
+  ].filter(c => c.contrib > 0);
+  const maxContrib = Math.max(...contributions.map(c => c.contrib), 1);
+  return contributions.map(c => ({ name: c.name, contrib: c.contrib, pct: Math.round((c.contrib / maxContrib) * 100) })).sort((a, b) => b.contrib - a.contrib);
+}
+
+function detectFlags(f, text) {
+  const flags = [];
+  const tl = text.toLowerCase();
+  if (f.repetition_rate > 0.25) flags.push('Alta repeticao de palavras');
+  if (f.lexical_diversity < 0.55) flags.push('Baixa diversidade lexical');
+  if (f.word_count < 120) flags.push('Abstract muito curto');
+  if (f.papermill_index > 0.1) flags.push('Linguagem de papermill detectada');
+  if (f.avg_sentence_len < 12) flags.push('Sentencas estruturalmente simples');
+  if (tl.includes('to the best of our knowledge')) flags.push('"To the best of our knowledge"');
+  if (tl.includes('novel') && tl.includes('significant')) flags.push('Excesso de adjetivos impactantes');
+  if (f.entropy < 3.5) flags.push('Baixa entropia textual');
+  return flags;
+}
+
+const EXEMPLOS = {
+  mill: 'This novel study demonstrates the significant and unprecedented effectiveness of our innovative approach to the treatment of diabetic retinopathy using advanced machine learning techniques. To the best of our knowledge, this is the first study to investigate this important research gap. Our comprehensive analysis shows promising and robust results. The novel findings suggest that our cutting-edge methodology achieves state-of-the-art performance. Further studies are needed to confirm these groundbreaking results. We demonstrate herein that our unique approach fills the gap in existing literature. The innovative results are significant and the methodology is comprehensive and novel.',
+  legit: 'We characterized the transcriptomic landscape of 43 matched primary and metastatic colorectal cancer samples using single-cell RNA sequencing. Unsupervised clustering identified 11 distinct cell populations, including two previously undescribed cancer-associated fibroblast subtypes with opposing roles in extracellular matrix remodeling. CXCL12-high fibroblasts correlated with improved progression-free survival (HR 0.61, 95% CI 0.43-0.87; p=0.006), while POSTN-high fibroblasts associated with hepatic metastasis. Spatial transcriptomics confirmed stromal compartmentalization at the invasion front. These findings implicate fibroblast heterogeneity as a determinant of metastatic potential and highlight CXCL12 signaling as a candidate therapeutic target.'
+};
+
+function analisar() {
+  const text = document.getElementById('abstract-input').value.trim();
+  if (text.length < 50) {
+    alert('Por favor, cole um abstract com pelo menos 50 caracteres.');
+    return;
+  }
+  const panel = document.getElementById('result-panel');
+  panel.classList.add('scanning');
+  setTimeout(() => panel.classList.remove('scanning'), 1500);
+  const f = extractFeatures(text);
+  if (!f) return;
+  const score = calcScore(f);
+  const contribs = getContributions(f, score);
+  const flags = detectFlags(f, text);
+  document.getElementById('result-empty').classList.add('hidden');
+  const content = document.getElementById('result-content');
+  content.classList.remove('hidden');
+  const scoreEl = document.getElementById('res-score');
+  scoreEl.textContent = score;
+  scoreEl.style.color = score >= 60 ? '#FF6B7A' : score >= 35 ? '#F0A500' : '#00D97E';
+  const bar = document.getElementById('res-bar');
+  bar.style.width = score + '%';
+  bar.style.background = score >= 60 ? 'linear-gradient(90deg,#FF4D6A,#FF6B7A)' : score >= 35 ? 'linear-gradient(90deg,#F0A500,#F9C74F)' : 'linear-gradient(90deg,#00D97E,#00F5A0)';
+  const verdict = document.getElementById('res-verdict');
+  if (score >= 60) { verdict.className = 'verdict-pill verdict-high'; verdict.innerHTML = '(!) Alto Risco -- Revisao Recomendada'; }
+  else if (score >= 35) { verdict.className = 'verdict-pill verdict-medium'; verdict.innerHTML = '(o) Risco Moderado -- Atencao'; }
+  else { verdict.className = 'verdict-pill verdict-low'; verdict.innerHTML = 'v Baixo Risco -- Sem Sinais Criticos'; }
+  const shapEl = document.getElementById('res-shap');
+  shapEl.innerHTML = '';
+  contribs.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'shap-row';
+    const barColor = c.contrib > 10 ? '#FF6B7A' : c.contrib > 5 ? '#F0A500' : '#7A96B2';
+    row.innerHTML = '<span class="shap-name">' + c.name + '</span><div class="shap-track"><div class="shap-bar" style="width:' + c.pct + '%;background:' + barColor + '"></div></div><span class="shap-val" style="color:' + barColor + '">+' + c.contrib.toFixed(1) + '</span>';
+    shapEl.appendChild(row);
+  });
+  const labels = { word_count: 'Palavras', repetition_rate: 'Repeticao', avg_word_length: 'Comp. medio palavra', num_sentences: 'Sentencas', entropy: 'Entropia', lexical_diversity: 'Diversidade lexical', rare_ratio: 'Palavras raras', avg_sentence_len: 'Comp. sentenca', papermill_index: 'Papermill idx' };
+  const featGrid = document.getElementById('res-features');
+  featGrid.innerHTML = '';
+  Object.entries(f).forEach(([k, v]) => {
+    const el = document.createElement('div');
+    el.className = 'feat-mini';
+    el.innerHTML = '<div class="feat-mini-name">' + (labels[k] || k) + '</div><div class="feat-mini-val">' + v + '</div>';
+    featGrid.appendChild(el);
+  });
+  const flagsSec = document.getElementById('flags-section');
+  const flagsList = document.getElementById('res-flags');
+  if (flags.length > 0) {
+    flagsSec.classList.remove('hidden');
+    flagsList.innerHTML = flags.map(fl => '<span class="flag">' + fl + '</span>').join('');
+  } else {
+    flagsSec.classList.add('hidden');
+  }
+  document.getElementById('demo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function carregarExemplo(tipo) {
+  document.getElementById('abstract-input').value = EXEMPLOS[tipo];
+  analisar();
+}
+
+function carregarExemploDominio() {
+  document.getElementById('abstract-input').value = DOMAINS[currentDomain].example;
+  analisar();
+}
+
+function limpar() {
+  document.getElementById('abstract-input').value = '';
+  document.getElementById('result-empty').classList.remove('hidden');
+  document.getElementById('result-content').classList.add('hidden');
+}
+</script>
 </body>
 </html>
