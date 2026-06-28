@@ -1,57 +1,51 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARCTURUS v8.0 — Scientific Integrity Screening</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* ===== TODO O CSS AQUI (COLE O CSS COMPLETO) ===== */
-:root {
-  --navy:       #080F1A;
-  --navy-mid:   #0D1B2E;
-  --navy-card:  #111E33;
-  --navy-light: #1A2E4A;
-  --steel:      #2D4A6B;
-  --ice:        #EEF2F7;
-  --white:      #FFFFFF;
-  --amber:      #F0A500;
-  --amber-glow: rgba(240,165,0,0.12);
-  --amber-dim:  #7A5400;
-  --green:      #00D97E;
-  --green-dim:  rgba(0,217,126,0.12);
-  --red:        #FF4D6A;
-  --red-dim:    rgba(255,77,106,0.12);
-  --muted:      #7A96B2;
-  --border:     rgba(120,160,200,0.14);
-  --scan:       rgba(240,165,0,0.06);
-
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body:    'Inter', sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
-
-  --radius: 10px;
-  --radius-lg: 16px;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--navy);
-  color: var(--ice);
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.65;
-  overflow-x: hidden;
-}
-
-/* ===== O RESTO DO CSS AQUI ===== */
-/* Por favor, cole o CSS completo que a Claude entregou */
-</style>
+    <meta http-equiv="refresh" content="0; url=ARCTURUS_v70_multi_dominio.html">
+    <title>ARCTURUS v8.0</title>
+    <style>
+        body {
+            background: #0a0e1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f0a500;
+        }
+        .loading {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #1a1a2e;
+            border-top: 4px solid #f0a500;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        a {
+            color: #f0a500;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<!-- ===== TODO O HTML AQUI ===== -->
+    <div class="loading">
+        <div class="spinner"></div>
+        <p>🔄 Carregando ARCTURUS...</p>
+        <p style="font-size: 0.8rem; color: #666;">
+            Se não redirecionar, <a href="ARCTURUS_v70_multi_dominio.html">clique aqui</a>
+        </p>
+    </div>
 </body>
 </html>
