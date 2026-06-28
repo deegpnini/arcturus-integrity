@@ -3,7 +3,246 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARCTURUS v8.0 - Scientific Integrity Screening</title>
-<!-- TODO O SEU HTML AQUI -->
+<title>ARCTURUS v8.0 - Integridade Científica</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0e1a;
+    color: #f0a500;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 20px;
+  }
+  .container {
+    max-width: 700px;
+    width: 100%;
+    background: #111a2e;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #f0a50033;
+  }
+  h1 { text-align: center; margin-bottom: 10px; }
+  .sub {
+    text-align: center;
+    color: #7a96b2;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+  textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 12px;
+    background: #0a0e1a;
+    border: 1px solid #2a3a5a;
+    border-radius: 8px;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    resize: vertical;
+    font-family: inherit;
+  }
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .btn-primary {
+    background: #f0a500;
+    color: #0a0e1a;
+  }
+  .btn-primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px #f0a50066;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: #7a96b2;
+    border: 1px solid #2a3a5a;
+  }
+  .btn-secondary:hover {
+    border-color: #f0a500;
+    color: #f0a500;
+  }
+  .result {
+    margin-top: 20px;
+    background: #0a0e1a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #1a2a4a;
+    display: none;
+  }
+  .score-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #f0a500;
+  }
+  .bar {
+    height: 8px;
+    background: #1a2a4a;
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #00d97e, #f0a500, #ff4d6a);
+    transition: width 0.8s ease;
+  }
+  .flags {
+    list-style: none;
+    margin-top: 10px;
+  }
+  .flags li {
+    padding: 6px 12px;
+    background: #111a2e;
+    margin: 4px 0;
+    border-radius: 6px;
+    border-left: 3px solid #f0a500;
+  }
+  .flags .high { border-left-color: #ff4d6a; }
+  .flags .low { border-left-color: #00d97e; }
+  .shap-info {
+    font-size: 0.8rem;
+    color: #7a96b2;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🏛️ ARCTURUS v8.0</h1>
+  <p class="sub">Detecção de integridade científica · Código aberto · 🇧🇷</p>
+
+  <textarea id="abstract" placeholder="Cole o abstract do artigo aqui..."></textarea>
+
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="analisar()">🔍 Analisar</button>
+    <button class="btn btn-secondary" onclick="limpar()">✖ Limpar</button>
+  </div>
+
+  <div id="resultado" class="result">
+    <div>
+      <span class="score-number" id="scoreNum">0</span>/100
+      <div class="bar"><div class="bar-fill" id="scoreBar"></div></div>
+    </div>
+    <div id="veredito" style="font-weight:600;margin:10px 0;"></div>
+    <ul class="flags" id="flagsList"></ul>
+    <div class="shap-info" id="shapInfo"></div>
+  </div>
+</div>
+
+<script>
+function extractFeatures(text) {
+  const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+  const n = words.length;
+  if (n === 0) return null;
+
+  const freq = {};
+  words.forEach(w => freq[w] = (freq[w] || 0) + 1);
+  const unique = Object.keys(freq).length;
+
+  const lexDiv = unique / n;
+  const repRate = 1 - lexDiv;
+  const entropy = -Object.values(freq).map(v => v/n).reduce((s, p) => s + p * Math.log2(p + 1e-10), 0);
+
+  const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 0);
+  const avgSentLen = sentences.length > 0 ? words.length / sentences.length : 0;
+
+  const suspTokens = ['novel', 'innovative', 'significant', 'unprecedented', 'cutting-edge', 'state-of-the-art', 'groundbreaking'];
+  const tokenHits = words.filter(w => suspTokens.includes(w)).length;
+  const papermillIndex = Math.min((tokenHits * 2) / Math.max(n / 50, 1), 1);
+
+  return {
+    word_count: n,
+    repetition_rate: repRate,
+    lexical_diversity: lexDiv,
+    avg_sentence_len: avgSentLen,
+    entropy: entropy,
+    papermill_index: papermillIndex
+  };
+}
+
+function calcScore(f) {
+  let score = 0;
+  score += f.repetition_rate * 35;
+  score += f.papermill_index * 30;
+  score += (1 - f.lexical_diversity) * 20;
+  if (f.avg_sentence_len < 10) score += 8;
+  if (f.entropy < 3.5) score += 7;
+  return Math.min(Math.round(score), 100);
+}
+
+function detectFlags(f) {
+  const flags = [];
+  if (f.repetition_rate > 0.25) flags.push({text: 'Alta repetição de palavras', level: 'high'});
+  if (f.lexical_diversity < 0.55) flags.push({text: 'Baixa diversidade lexical', level: 'high'});
+  if (f.papermill_index > 0.1) flags.push({text: 'Linguagem de papermill detectada', level: 'high'});
+  if (f.avg_sentence_len < 12) flags.push({text: 'Sentenças estruturalmente simples', level: 'low'});
+  if (f.entropy < 3.5) flags.push({text: 'Baixa entropia textual', level: 'low'});
+  if (flags.length === 0) flags.push({text: '✅ Nenhum sinal crítico detectado', level: 'low'});
+  return flags;
+}
+
+function analisar() {
+  const text = document.getElementById('abstract').value.trim();
+  if (text.length < 30) {
+    alert('Por favor, cole um abstract com pelo menos 30 caracteres.');
+    return;
+  }
+
+  const f = extractFeatures(text);
+  if (!f) return;
+
+  const score = calcScore(f);
+  const flags = detectFlags(f);
+
+  const resultado = document.getElementById('resultado');
+  resultado.style.display = 'block';
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('scoreBar').style.width = score + '%';
+
+  const veredito = document.getElementById('veredito');
+  if (score >= 60) {
+    veredito.innerHTML = '🔴 ALTO RISCO — Revisão recomendada';
+    veredito.style.color = '#ff4d6a';
+  } else if (score >= 35) {
+    veredito.innerHTML = '🟡 RISCO MODERADO — Atenção';
+    veredito.style.color = '#f0a500';
+  } else {
+    veredito.innerHTML = '🟢 BAIXO RISCO — Sem sinais críticos';
+    veredito.style.color = '#00d97e';
+  }
+
+  const list = document.getElementById('flagsList');
+  list.innerHTML = flags.map(f => `<li class="${f.level}">${f.text}</li>`).join('');
+
+  document.getElementById('shapInfo').innerHTML = `
+    <strong>📊 Contribuições (SHAP-style):</strong><br>
+    • Repetição: +${(f.repetition_rate * 35).toFixed(1)}<br>
+    • Papermill index: +${(f.papermill_index * 30).toFixed(1)}<br>
+    • Diversidade lexical: +${((1 - f.lexical_diversity) * 20).toFixed(1)}
+  `;
+}
+
+function limpar() {
+  document.getElementById('abstract').value = '';
+  document.getElementById('resultado').style.display = 'none';
+}
+</script>
 </body>
 </html>
